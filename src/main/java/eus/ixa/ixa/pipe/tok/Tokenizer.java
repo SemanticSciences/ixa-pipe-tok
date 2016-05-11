@@ -20,6 +20,5 @@ import java.util.List;
 
 public interface Tokenizer {
 
-  public List<List<Token>> tokenize(String[] sentence);
-
+    public List<List<Token>> tokenize(String[] sentence);
 }

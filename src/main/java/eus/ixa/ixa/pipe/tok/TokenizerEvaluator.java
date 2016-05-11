@@ -16,94 +16,91 @@
 
 package eus.ixa.ixa.pipe.tok;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
-
 /**
  * The {@link TokenizerEvaluator} measures the performance of a tokenizer wrt to
  * some reference {@link Token}s.
- * 
  */
 public class TokenizerEvaluator {
 
-  private final FMeasure fmeasure = new FMeasure();
-  public static final boolean DEBUG = true;
+    private final FMeasure fmeasure = new FMeasure();
+    public static final boolean DEBUG = true;
 
-  private List<List<String>> referenceTokens(final List<Token> referenceList) {
+    private List<List<String>> referenceTokens(final List<Token> referenceList) {
 
-    final List<List<String>> references = new ArrayList<List<String>>();
-    for (int i = 0; i < referenceList.size(); i++) {
-      final List<String> reference = Arrays.asList(new String[] {
-          Integer.toString(i), referenceList.get(i).getTokenValue() });
-      references.add(reference);
+        final List<List<String>> references = new ArrayList<List<String>>();
+        for (int i = 0; i < referenceList.size(); i++) {
+            final List<String> reference = Arrays.asList(new String[]{
+                    Integer.toString(i), referenceList.get(i).getTokenValue()});
+            references.add(reference);
 
-      if (DEBUG) {
-        final StringBuilder sb = new StringBuilder();
-        sb.append(referenceList.get(i).getTokenValue()).append(" ")
-            .append(reference).append("\n");
-        try {
-          Files.append(sb.toString(), new File("reference-tokens.log"),
-              Charsets.UTF_8);
-        } catch (final IOException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+            if (DEBUG) {
+                final StringBuilder sb = new StringBuilder();
+                sb.append(referenceList.get(i).getTokenValue()).append(" ")
+                        .append(reference).append("\n");
+                try {
+                    Files.append(sb.toString(), new File("reference-tokens.log"),
+                            Charsets.UTF_8);
+                } catch (final IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
         }
-      }
+        return references;
     }
-    return references;
-  }
 
-  private List<List<String>> predictionTokens(final List<Token> predictionList) {
+    private List<List<String>> predictionTokens(final List<Token> predictionList) {
 
-    final List<List<String>> predictions = new ArrayList<List<String>>();
-    for (int j = 0; j < predictionList.size(); j++) {
-      final List<String> prediction = Arrays.asList(new String[] {
-          Integer.toString(j), predictionList.get(j).getTokenValue() });
-      predictions.add(prediction);
+        final List<List<String>> predictions = new ArrayList<List<String>>();
+        for (int j = 0; j < predictionList.size(); j++) {
+            final List<String> prediction = Arrays.asList(new String[]{
+                    Integer.toString(j), predictionList.get(j).getTokenValue()});
+            predictions.add(prediction);
 
-      if (DEBUG) {
-        final StringBuilder sb = new StringBuilder();
-        sb.append(predictionList.get(j).getTokenValue()).append(" ")
-            .append(prediction).append("\n");
-        try {
-          Files.append(sb.toString(), new File("prediction-tokens.log"),
-              Charsets.UTF_8);
-        } catch (final IOException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+            if (DEBUG) {
+                final StringBuilder sb = new StringBuilder();
+                sb.append(predictionList.get(j).getTokenValue()).append(" ")
+                        .append(prediction).append("\n");
+                try {
+                    Files.append(sb.toString(), new File("prediction-tokens.log"),
+                            Charsets.UTF_8);
+                } catch (final IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
         }
-      }
+        return predictions;
     }
-    return predictions;
-  }
 
-  /**
-   * Evaluates the given reference Token list wrt to the predicted Token list.
-   * 
-   * The implementation has to update the score after every invocation.
-   * 
-   * @param referenceList
-   *          the reference sample.
-   * @param predictedList
-   *          the predictedList
-   */
+    /**
+     * Evaluates the given reference Token list wrt to the predicted Token list.
+     * <p/>
+     * The implementation has to update the score after every invocation.
+     *
+     * @param referenceList the reference sample.
+     * @param predictedList the predictedList
+     */
 
-  public void evaluate(final List<Token> referenceList,
-      final List<Token> predictedList) {
+    public void evaluate(final List<Token> referenceList,
+                         final List<Token> predictedList) {
 
-    final List<List<String>> references = referenceTokens(referenceList);
-    final List<List<String>> predictions = predictionTokens(predictedList);
-    fmeasure.updateScores(references, predictions);
+        final List<List<String>> references = referenceTokens(referenceList);
+        final List<List<String>> predictions = predictionTokens(predictedList);
+        fmeasure.updateScores(references, predictions);
 
-  }
+    }
 
-  public FMeasure getFMeasure() {
-    return fmeasure;
-  }
+    public FMeasure getFMeasure() {
+        return fmeasure;
+    }
 }
