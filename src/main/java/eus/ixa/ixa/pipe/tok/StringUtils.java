@@ -1,9 +1,5 @@
 package eus.ixa.ixa.pipe.tok;
 
-import eus.ixa.ixa.pipe.seg.RuleBasedSegmenter;
-
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -67,29 +63,5 @@ public class StringUtils {
         regExp = regExp.replaceAll("\\.", "\\\\.");
         final String result = regExp.substring(1, regExp.length() - 1);
         return result;
-    }
-
-    /**
-     * Reads standard input text from the BufferedReader and
-     * adds a line break mark for every line. The output of
-     * this functions is then further processed by methods
-     * called in the constructors of the SentenceSegmenter and
-     * Tokenizer.
-     *
-     * @param breader the buffered reader
-     * @return the input text in a string object
-     */
-    public static String readText(final BufferedReader breader) {
-        String line;
-        final StringBuilder sb = new StringBuilder();
-        try {
-            while ((line = breader.readLine()) != null) {
-                sb.append(line).append(RuleBasedSegmenter.LINE_BREAK);
-            }
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
-        final String text = sb.toString();
-        return text;
     }
 }

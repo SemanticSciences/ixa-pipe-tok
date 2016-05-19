@@ -84,7 +84,7 @@ public class TokenizerEvaluator {
 
     /**
      * Evaluates the given reference Token list wrt to the predicted Token list.
-     * <p/>
+     *
      * The implementation has to update the score after every invocation.
      *
      * @param referenceList the reference sample.

@@ -32,22 +32,10 @@ import java.util.regex.Pattern;
 public class RuleBasedSegmenter implements SentenceSegmenter {
 
     /**
-     * The constant representing every line break in the original input text.
-     */
-    public static final String LINE_BREAK = "<JAR>";
-    /**
      * Constant representing a paragraph (a doubleLine) in the original input
      * text.
      */
     public static final String PARAGRAPH = "\u00B6\u00B6";
-    /**
-     * Line break pattern.
-     */
-    public static Pattern lineBreak = Pattern.compile("<JAR>");
-    /**
-     * Two lines.
-     */
-    public static Pattern doubleLineBreak = Pattern.compile("(<JAR><JAR>)");
     /**
      * Paragraph pattern.
      */
@@ -141,25 +129,19 @@ public class RuleBasedSegmenter implements SentenceSegmenter {
      * The nonbreaker decides when to split strings followed by periods.
      */
     private NonPeriodBreaker nonBreaker;
-    private final String text;
     private boolean isHardParagraph = false;
 
     /**
      * Construct a RuleBasedSegmenter from a BufferedReader and the properties.
      *
-     * @param originalText the text to be segmented
      * @param properties   the properties
      */
-    public RuleBasedSegmenter(final String originalText, final Properties properties) {
+    public RuleBasedSegmenter(final Properties properties) {
         String hardParagraph = properties.getProperty("hardParagraph");
         if (hardParagraph.equalsIgnoreCase("yes")) {
             isHardParagraph = true;
         }
-        if (nonBreaker == null) {
-            nonBreaker = new NonPeriodBreaker(properties);
-        }
-        // TODO improve this, when should we load the text?
-        text = buildText(originalText);
+        nonBreaker = new NonPeriodBreaker(properties);
     }
 
     /*
@@ -167,11 +149,8 @@ public class RuleBasedSegmenter implements SentenceSegmenter {
      *
      * @see eus.ixa.ixa.pipe.seg.SentenceSegmenter#segmentSentence()
      */
-    public String[] segmentSentence() {
-        if (DEBUG) {
-            System.err.println("-> Build:" + text);
-        }
-        final String[] sentences = segment(text);
+    public String[] segmentSentence(String originalText) {
+        final String[] sentences = segment(originalText);
         return sentences;
     }
 
@@ -222,14 +201,4 @@ public class RuleBasedSegmenter implements SentenceSegmenter {
         final String[] sentences = line.split("\n");
         return sentences;
     }
-
-    public static String buildText(String text) {
-        // <JAR><JAR> to PARAGRAPH mark in unicode
-        text = RuleBasedSegmenter.doubleLineBreak.matcher(text).replaceAll(
-                PARAGRAPH);
-        // <JAR> to " "
-        text = RuleBasedSegmenter.lineBreak.matcher(text).replaceAll(" ");
-        return text;
-    }
-
 }

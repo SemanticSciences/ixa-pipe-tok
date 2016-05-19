@@ -26,7 +26,7 @@ import java.util.List;
  * calculated for each reference sample. This class is specified for the
  * Tokenizer evaluation which looks at the {@code Token} value and the index in
  * the list of {@code Token}s.
- * <p/>
+ *
  * This class is largely the same as the FMeasure class in Apache OpenNLP
  * project with some very minor modifications.
  */
@@ -68,9 +68,7 @@ public final class FMeasure {
 
     /**
      * Retrieves the f-measure score.
-     * <p/>
      * f-measure = 2 * precision * recall / (precision + recall)
-     *
      * @return the f-measure or -1 if precision + recall is less or equal to 0
      */
     public double getFMeasure() {

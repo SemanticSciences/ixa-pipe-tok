@@ -17,5 +17,5 @@
 package eus.ixa.ixa.pipe.seg;
 
 public interface SentenceSegmenter {
-    public String[] segmentSentence();
+    public String[] segmentSentence(String originalText);
 }

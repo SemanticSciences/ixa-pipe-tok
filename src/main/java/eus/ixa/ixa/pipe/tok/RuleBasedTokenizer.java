@@ -17,6 +17,7 @@
 package eus.ixa.ixa.pipe.tok;
 
 import eus.ixa.ixa.pipe.seg.RuleBasedSegmenter;
+import eus.ixa.ixa.pipe.seg.SentenceSegmenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -179,22 +180,21 @@ public class RuleBasedTokenizer implements Tokenizer {
     private final TokenFactory tokenFactory;
     private final NonPeriodBreaker nonBreaker;
     private final String lang;
-    private final String originalText;
     private boolean unTokenizable;
+    private SentenceSegmenter segmenter;
 
     /**
      * Construct a rule based tokenizer.
      *
-     * @param text       the text used for offset calculation
      * @param properties the options
      */
-    public RuleBasedTokenizer(final String text, final Properties properties) {
+    public RuleBasedTokenizer(final Properties properties) {
         lang = properties.getProperty("language");
         printUntokenizable(properties);
         nonBreaker = new NonPeriodBreaker(properties);
         tokenFactory = new TokenFactory();
+        segmenter = new RuleBasedSegmenter(properties);
         // TODO improve this
-        originalText = RuleBasedSegmenter.buildText(text);
     }
 
     /*
@@ -202,19 +202,16 @@ public class RuleBasedTokenizer implements Tokenizer {
      *
      * @see eus.ixa.ixa.pipe.tok.Tokenizer#tokenize(java.lang.String[])
      */
-    public List<List<Token>> tokenize(final String[] sentences) {
-        final long start = System.nanoTime();
+    public List<Token> tokenize(final String originalText) {
         int noTokens = 0;
         int prevIndex = 0;
         int curIndex = 0;
         final String language = lang;
-        final List<List<Token>> result = new ArrayList<List<Token>>();
+        final List<Token> result = new ArrayList<>();
         // TODO improve this
         final String offsetText = originalText;
+        final String[] sentences = segmenter.segmentSentence(originalText);
         for (final String sentence : sentences) {
-            if (DEBUG) {
-                System.err.println("-> Segmented:" + sentence);
-            }
             final List<Token> tokens = new ArrayList<Token>();
             final String[] curTokens = getTokens(sentence);
             for (final String arrayToken : curTokens) {
@@ -227,21 +224,12 @@ public class RuleBasedTokenizer implements Tokenizer {
                         arrayToken.length());
                 //exceptions to WFs
                 addTokens(curToken, tokens);
-                if (DEBUG) {
-                    System.err.println("-> Token:" + arrayToken + " curIndex: " + curIndex
-                            + " prev: " + prevIndex);
-                }
+
                 prevIndex = curIndex + curToken.tokenLength();
             }
-            result.add(tokens);
+            result.addAll(tokens);
             noTokens = noTokens + curTokens.length;
         }
-        normalizeTokens(result, language);
-        final long duration = System.nanoTime() - start;
-        final double toksPerSecond = noTokens / (duration / 1000000000.0);
-        System.err.printf(
-                "ixa-pipe-tok tokenized %d tokens at %.2f tokens per second.%n",
-                noTokens, toksPerSecond);
         return result;
     }
 
